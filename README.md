@@ -1,2 +1,2 @@
-# Mips-Dissasembler-
+# Mips-Dissasembler
 Its a Mips Dissasembler
