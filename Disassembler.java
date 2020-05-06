@@ -3,29 +3,95 @@ import java.util.*;
 //Class Disassembler
 public class Disassembler 
 {
-	private String binBits = new String();
 	
-
+//note to self. Substring numbers are wrong because the actual binary input
+	//numbers will be in reverse. 
+	//need to fix charAt(#) for register decode functions
 	public static void main(String[] args) 
 	{
+		String binBits = setBits("000000000010011010001");
+		int fType = opcode(binBits.substring(0,6));
+		int rs,rt,rd;
+		
+		if(fType == 0) //do instructions for r-types
+		{
+			rs = decodeRs(binBits.substring(6,12));
+			rt = decodeRs(binBits.substring(12,16));
+			rd = decodeRs(binBits.substring(17,21));
+			System.out.println(rs + " " + rt + " " + rd);
+		}
+		else if(fType == 1) //do instructions for j-types
+		{
+			
+		}
+		else //do instructions for i-type
+		{
+			
+		}
 		
 	}
 	
-	void setBits(String b)
+	static String setBits(String b)
 	{
-		binBits = b;
+		return b;
 	}
 	
-	int opcode()
+	static int opcode(String bits)
 	{
-		String op = binBits.substring(0,6);
-		
-		if(op.equals("000000"))
+		if(bits.equals("000000"))
 			return 0; //r-format
-		else if(op.equals("000010") || op.equals("000011"))
+		else if(bits.equals("000010") || bits.equals("000011"))
 			return 1; //j-format
 		else
 			return 2; //i-format
+	}
+	
+	static int decodeRs(String bits)
+	{
+		int reg=0;
+		if(bits.charAt(4) == '1')
+			reg += 1;
+		if(bits.charAt(3) == '1')
+			reg += 2;
+		if(bits.charAt(2) == '1')
+			reg += 4;
+		if(bits.charAt(1) == '1')
+			reg += 8;
+		if(bits.charAt(0) == '1')
+			reg += 16;
+		return reg;
+	}
+	
+	static int decodeRt(String bits)
+	{
+		int reg=0;
+		if(bits.charAt(4) == '1')
+			reg += 1;
+		if(bits.charAt(3) == '1')
+			reg += 2;
+		if(bits.charAt(2) == '1')
+			reg += 4;
+		if(bits.charAt(1) == '1')
+			reg += 8;
+		if(bits.charAt(0) == '1')
+			reg += 16;
+		return reg;
+	}
+	
+	static int decodeRd(String bits)
+	{
+		int reg=0;
+		if(bits.charAt(4) == '1')
+			reg += 1;
+		if(bits.charAt(3) == '1')
+			reg += 2;
+		if(bits.charAt(2) == '1')
+			reg += 4;
+		if(bits.charAt(1) == '1')
+			reg += 8;
+		if(bits.charAt(0) == '1')
+			reg += 16;
+		return reg;
 	}
 	
 }
