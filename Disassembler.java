@@ -10,6 +10,9 @@ public class Disassembler
 	public static void main(String[] args) 
 	{
 		String binBits = setBits("000000000010001100010000");
+		String registers[] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4",
+				"$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp",
+				"$fp","$ra"};
 		int fType = opcode(binBits.substring(0,6));
 		int rs,rt,rd;
 		
@@ -18,7 +21,6 @@ public class Disassembler
 			rs = decodeReg(binBits.substring(6,11));
 			rt = decodeReg(binBits.substring(11,16));
 			rd = decodeReg(binBits.substring(16,21));
-			System.out.println(rs + " " + rt + " " + rd);
 		}
 		else if(fType == 1) //do instructions for j-types
 		{
@@ -28,7 +30,6 @@ public class Disassembler
 		{
 			
 		}
-		
 	}
 	
 	static String setBits(String b)
