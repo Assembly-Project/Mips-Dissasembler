@@ -63,4 +63,15 @@ public class Disassembler
 		return reg;
 	}
 	
+	static int decodeShamt(String bits)
+	{
+		return 0;
+	}
+	
+	static String decodeFunc(String bits)
+	{
+		
+		return "";
+	}
+	
 }
