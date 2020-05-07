@@ -1,3 +1,4 @@
+package disassembler;
 import java.util.*;
 
 //Class Disassembler
@@ -9,15 +10,15 @@ public class Disassembler
 	//need to fix charAt(#) for register decode functions
 	public static void main(String[] args) 
 	{
-		String binBits = setBits("000000000010011010001");
+		String binBits = setBits("000000000010001100010000");
 		int fType = opcode(binBits.substring(0,6));
 		int rs,rt,rd;
 		
 		if(fType == 0) //do instructions for r-types
 		{
-			rs = decodeRs(binBits.substring(6,12));
-			rt = decodeRs(binBits.substring(12,16));
-			rd = decodeRs(binBits.substring(17,21));
+			rs = decodeReg(binBits.substring(6,12));
+			rt = decodeReg(binBits.substring(12,17));
+			rd = decodeReg(binBits.substring(17,22));
 			System.out.println(rs + " " + rt + " " + rd);
 		}
 		else if(fType == 1) //do instructions for j-types
@@ -46,39 +47,7 @@ public class Disassembler
 			return 2; //i-format
 	}
 	
-	static int decodeRs(String bits)
-	{
-		int reg=0;
-		if(bits.charAt(4) == '1')
-			reg += 1;
-		if(bits.charAt(3) == '1')
-			reg += 2;
-		if(bits.charAt(2) == '1')
-			reg += 4;
-		if(bits.charAt(1) == '1')
-			reg += 8;
-		if(bits.charAt(0) == '1')
-			reg += 16;
-		return reg;
-	}
-	
-	static int decodeRt(String bits)
-	{
-		int reg=0;
-		if(bits.charAt(4) == '1')
-			reg += 1;
-		if(bits.charAt(3) == '1')
-			reg += 2;
-		if(bits.charAt(2) == '1')
-			reg += 4;
-		if(bits.charAt(1) == '1')
-			reg += 8;
-		if(bits.charAt(0) == '1')
-			reg += 16;
-		return reg;
-	}
-	
-	static int decodeRd(String bits)
+	static int decodeReg(String bits)
 	{
 		int reg=0;
 		if(bits.charAt(4) == '1')
