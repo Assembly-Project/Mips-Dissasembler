@@ -7,7 +7,6 @@ public class Disassembler
 	
 //note to self. Substring numbers are wrong because the actual binary input
 	//numbers will be in reverse. 
-	//need to fix charAt(#) for register decode functions
 	public static void main(String[] args) 
 	{
 		String binBits = setBits("000000000010001100010000");
@@ -16,9 +15,9 @@ public class Disassembler
 		
 		if(fType == 0) //do instructions for r-types
 		{
-			rs = decodeReg(binBits.substring(6,12));
-			rt = decodeReg(binBits.substring(12,17));
-			rd = decodeReg(binBits.substring(17,22));
+			rs = decodeReg(binBits.substring(6,11));
+			rt = decodeReg(binBits.substring(11,16));
+			rd = decodeReg(binBits.substring(16,21));
 			System.out.println(rs + " " + rt + " " + rd);
 		}
 		else if(fType == 1) //do instructions for j-types
