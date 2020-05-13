@@ -9,7 +9,8 @@ public class Disassembler
 	public static void main(String[] args) 
 	{
 		//String binBits = setBits("00000000001000110001000000100000");
-		String binBits = setBits("00001010000001000000000000000001");
+		//String binBits = setBits("00001010000001000000000000000001");
+		String binBits = setBits("00100000111010000000000110001111");
 		String registers[] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4",
 				"$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp",
 				"$fp","$ra"};
@@ -17,7 +18,7 @@ public class Disassembler
 		int rs,rt,rd,shamt;
 		String instrName = new String();
 		String jAddress = new String();
-		String immediate = new String();
+		int immediate;
 		
 		if(fType == 0) //do instructions for r-types
 		{
@@ -49,7 +50,8 @@ public class Disassembler
 			instrName = decodeIJFunc(binBits.substring(0,6));
 			rs = decodeReg(binBits.substring(6,11));
 			rt = decodeReg(binBits.substring(11,16));
-			immediate = decodeImmField(binBits,instrName);
+			immediate = decodeImmField(binBits.substring(16));
+			System.out.println(instrName + " " + registers[rt] + " " + registers[rs] + " " + immediate);
 		}
 	}
 	
@@ -263,23 +265,12 @@ public class Disassembler
 		return hexAddress;
 	}
 	
-	static String decodeImmField(String bits, String instr)
+	static int decodeImmField(String bits)
 	{
-		if(instr.equals("beq") || instr.equals("bne"))
-		{
-			//immediate field to address conversion
-		}
-		else if(instr.equals("lu") || instr.equals("lbu") 
-				|| instr.equals("lhu") || instr.equals("lw")
-				|| instr.equals("sb") || instr.equals("sh")
-				|| instr.equals("sw"))
-		{
-			//immdiate field is an offset of rs?
-		}
-		else
-		{
-			//immediate should just be an integer
-		}
-		return "";
+		int value = 0;
+		for(int i = 0;i<16;i++)
+			if(bits.charAt(i) == '1')
+				value += 2^i;
+		return value;
 	}
 }
