@@ -17,6 +17,7 @@ public class Disassembler
 		int rs,rt,rd,shamt;
 		String instrName = new String();
 		String jAddress = new String();
+		String immediate = new String();
 		
 		if(fType == 0) //do instructions for r-types
 		{
@@ -48,7 +49,7 @@ public class Disassembler
 			instrName = decodeIJFunc(binBits.substring(0,6));
 			rs = decodeReg(binBits.substring(6,11));
 			rt = decodeReg(binBits.substring(11,16));
-			
+			immediate = decodeImmField(binBits,instrName);
 		}
 	}
 	
@@ -262,9 +263,23 @@ public class Disassembler
 		return hexAddress;
 	}
 	
-	static String decodeImmField(String bits)
+	static String decodeImmField(String bits, String instr)
 	{
-		
+		if(instr.equals("beq") || instr.equals("bne"))
+		{
+			//immediate field to address conversion
+		}
+		else if(instr.equals("lu") || instr.equals("lbu") 
+				|| instr.equals("lhu") || instr.equals("lw")
+				|| instr.equals("sb") || instr.equals("sh")
+				|| instr.equals("sw"))
+		{
+			//immdiate field is an offset of rs?
+		}
+		else
+		{
+			//immediate should just be an integer
+		}
 		return "";
 	}
 }
