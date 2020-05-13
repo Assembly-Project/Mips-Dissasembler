@@ -3,63 +3,65 @@ import java.util.*;
 //Class Disassembler
 public class Disassembler 
 {
+	Output output = new Output();
 	
-//note to self. Substring numbers are wrong because the actual binary input
-	//numbers will be in reverse. 
-	public static void main(String[] args) 
-	{
-		//String binBits = setBits("00000000001000110001000000100000");
-		String binBits = setBits("00001010000001000000000000000001");
-		String registers[] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4",
-				"$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp",
-				"$fp","$ra"};
-		int fType = opcode(binBits.substring(0,6));
-		int rs,rt,rd,shamt;
-		String instrName = new String();
-		String jAddress = new String();
-		String immediate = new String();
+	final String registers[] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4",
+			"$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp",
+			"$fp","$ra"};
+	String bitString;
+	int fType;
+	int rs,rt,rd,shamt;
+	String funct;
+	String jAddress;
+	
+	public void setbits(String bitString) {
+		this.bitString = bitString;
+		fType = opcode(bitString.substring(0,6));
+	}
+	
+	public void instructionFormat() {
 		
 		if(fType == 0) //do instructions for r-types
-		{
-			rs = decodeReg(binBits.substring(6,11));
-			rt = decodeReg(binBits.substring(11,16));
-			rd = decodeReg(binBits.substring(16,21));
-			shamt = decodeShamt(binBits.substring(21,26));
-			instrName = decodeRFunc(binBits.substring(26,32));
-			if(instrName.equals("syscall"))
-			{
-				System.out.println(instrName);
-			}
-			else if(shamt > 0)
-			{
-				System.out.println(instrName + " " + registers[rd] + ", " + registers[rt] + ", " + shamt + "(" + registers[rs] + ")");
-			}
-			else
-				System.out.println(instrName + " " + registers[rd] + ", " + registers[rt] + ", " + registers[rs]);
-		}
+			decodeRInstruction();
+		
 		else if(fType == 1) //do instructions for j-types
-		{
-			instrName = decodeIJFunc(binBits.substring(0,6));
-			jAddress = decodeJAddress(binBits.substring(6));
-			System.out.println(instrName + " " + jAddress);
-			
-		}
+			decodeJInstruction();
+		
 		else //do instructions for i-type
+			decodeIInstruction();
+	}
+	
+	private void decodeRInstruction() {
+		rs = decodeReg(bitString.substring(6,11));
+		rt = decodeReg(bitString.substring(11,16));
+		rd = decodeReg(bitString.substring(16,21));
+		shamt = decodeShamt(bitString.substring(21,26));
+		funct = decodeRFunc(bitString.substring(26,32));
+		if(funct.equals("syscall"))
 		{
-			instrName = decodeIJFunc(binBits.substring(0,6));
-			rs = decodeReg(binBits.substring(6,11));
-			rt = decodeReg(binBits.substring(11,16));
-			immediate = decodeImmField(binBits,instrName);
+			output.setmipsCodeMisc("Syscall");
 		}
+		else
+			output.setmipsCodeR(registers[rs], registers[rt], registers[rd], shamt, funct);
 	}
 	
-	static String setBits(String b)
-	{
-		return b;
+	private void decodeIInstruction() {
+		funct = decodeIJFunc(bitString.substring(0,6));
+		rs = decodeReg(bitString.substring(6,11));
+		rt = decodeReg(bitString.substring(11,16));
+		
+		output.setmipsCodeI(funct, registers[rs], registers[rt], "TEMP");
 	}
 	
+	private void decodeJInstruction() {
+		funct = decodeIJFunc(bitString.substring(0,6));
+		jAddress = decodeJAddress(bitString.substring(6));
+		
+		output.setmipsCodeJ(funct, jAddress);
+	}
+
 	//decodes the opcode
-	static int opcode(String bits)
+	private int opcode(String bits)
 	{
 		if(bits.equals("000000"))
 			return 0; //r-format
@@ -263,23 +265,9 @@ public class Disassembler
 		return hexAddress;
 	}
 	
-	static String decodeImmField(String bits, String instr)
+	static String decodeImmField(String bits)
 	{
-		if(instr.equals("beq") || instr.equals("bne"))
-		{
-			//immediate field to address conversion
-		}
-		else if(instr.equals("lu") || instr.equals("lbu") 
-				|| instr.equals("lhu") || instr.equals("lw")
-				|| instr.equals("sb") || instr.equals("sh")
-				|| instr.equals("sw"))
-		{
-			//immdiate field is an offset of rs?
-		}
-		else
-		{
-			//immediate should just be an integer
-		}
+		
 		return "";
 	}
 }
