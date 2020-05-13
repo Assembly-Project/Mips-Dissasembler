@@ -8,13 +8,15 @@ public class Disassembler
 	//numbers will be in reverse. 
 	public static void main(String[] args) 
 	{
-		String binBits = setBits("00000000001000110001000000100000");
+		//String binBits = setBits("00000000001000110001000000100000");
+		String binBits = setBits("00001010000001000000000000000001");
 		String registers[] = {"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4",
 				"$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp",
 				"$fp","$ra"};
 		int fType = opcode(binBits.substring(0,6));
 		int rs,rt,rd,shamt;
 		String instrName = new String();
+		String jAddress = new String();
 		
 		if(fType == 0) //do instructions for r-types
 		{
@@ -36,10 +38,16 @@ public class Disassembler
 		}
 		else if(fType == 1) //do instructions for j-types
 		{
+			instrName = decodeIJFunc(binBits.substring(0,6));
+			jAddress = decodeJAddress(binBits.substring(6));
+			System.out.println(instrName + " " + jAddress);
 			
 		}
 		else //do instructions for i-type
 		{
+			instrName = decodeIJFunc(binBits.substring(0,6));
+			rs = decodeReg(binBits.substring(6,11));
+			rt = decodeReg(binBits.substring(11,16));
 			
 		}
 	}
@@ -63,6 +71,7 @@ public class Disassembler
 	//decodes the register bits
 	static int decodeReg(String bits)
 	{
+		//starts at the fifth bit and works towards to first adding the appropriate power of 2
 		int reg=0;
 		if(bits.charAt(4) == '1')
 			reg += 1;
@@ -80,6 +89,7 @@ public class Disassembler
 	//decodes shamt
 	static int decodeShamt(String bits)
 	{
+		//starts at the 5th bit and goes to the first while adding the correct power of 2
 		int offset = 0;
 		if(bits.charAt(4) == '1')
 			offset += 1;
@@ -97,6 +107,7 @@ public class Disassembler
 	//decodes the function name for r-type instruction and syscall
 	static String decodeRFunc(String bits)
 	{
+		//finds the value of the bits
 		String funcName = new String();
 		int func = 0;
 		if(bits.charAt(5) == '1')
@@ -112,8 +123,8 @@ public class Disassembler
 		if(bits.charAt(0) == '1')
 			func += 32;
 		
-		//starts to decode the function bits and returns
-			//the name of the instruction
+		//searches for a matching hex code to for the value of the bits passed to it
+			//and returns the name of the instruction
 		if(func == 0x20)
 			funcName = "Add";
 		else if(func == 0x21)
@@ -149,6 +160,7 @@ public class Disassembler
 		//conflict in the opcode/function code with addi and syscall
 	static String decodeIJFunc(String bits)
 	{
+		//finds the value of the bits passed to it
 		String funcName = new String();
 		int func = 0;
 		if(bits.charAt(5) == '1')
@@ -164,6 +176,8 @@ public class Disassembler
 		if(bits.charAt(0) == '1')
 			func += 32;
 		
+		//compares the value of bits passed to it and compares that to the 
+			//hex values for the instructions. Returns instruction name
 		if(func == 0x8)
 			funcName = "addi";//i-format
 		else if(func == 0x9)
@@ -206,4 +220,51 @@ public class Disassembler
 		return funcName;
 	}
 	
+	//decodes the 26 bit address for J type instructions
+	static String decodeJAddress(String bits)
+	{
+		String address = new String();
+		String hexAddress = new String();
+		int binToHex;
+		//sign extend for 26 bit address. Can replace 4 0's if PC counter is known.
+		address = "0000" + bits + "00";
+		
+		for(int i = 0;i<32;i=i+4)
+		{
+			//finds the numerical value of the four bits that it is looking at
+			binToHex = 0;
+			if(address.charAt(i+3) == '1')
+				binToHex += 1;
+			if(address.charAt(i+2) == '1')
+				binToHex += 2;
+			if(address.charAt(i+1) == '1')
+				binToHex += 4;
+			if(address.charAt(i) == '1')
+				binToHex += 8;
+			
+			//takes the numerical value of the four bits, converts it to hex and adds that to the hexadecimal address.
+			if(binToHex < 10)
+				hexAddress += Integer.toString(binToHex);
+			else if(binToHex == 10)
+				hexAddress += 'A';
+			else if(binToHex == 11)
+				hexAddress += 'B';
+			else if(binToHex == 12)
+				hexAddress += 'C';
+			else if(binToHex == 13)
+				hexAddress += 'D';
+			else if(binToHex == 14)
+				hexAddress += 'E';
+			else if(binToHex == 15)
+				hexAddress += 'F';
+		}
+			
+		return hexAddress;
+	}
+	
+	static String decodeImmField(String bits)
+	{
+		
+		return "";
+	}
 }
