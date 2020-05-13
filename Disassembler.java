@@ -22,8 +22,17 @@ public class Disassembler
 			rt = decodeReg(binBits.substring(11,16));
 			rd = decodeReg(binBits.substring(16,21));
 			shamt = decodeShamt(binBits.substring(21,26));
-			instrName = decodeFunc(binBits.substring(26,32));
-			System.out.println(instrName + " " + registers[rd] + " " + registers[rt] + " " + registers[rs] + " " + shamt + " ");
+			instrName = decodeRFunc(binBits.substring(26,32));
+			if(instrName.equals("syscall"))
+			{
+				System.out.println(instrName);
+			}
+			else if(shamt > 0)
+			{
+				System.out.println(instrName + " " + registers[rd] + ", " + registers[rt] + ", " + shamt + "(" + registers[rs] + ")");
+			}
+			else
+				System.out.println(instrName + " " + registers[rd] + ", " + registers[rt] + ", " + registers[rs]);
 		}
 		else if(fType == 1) //do instructions for j-types
 		{
@@ -40,6 +49,7 @@ public class Disassembler
 		return b;
 	}
 	
+	//decodes the opcode
 	static int opcode(String bits)
 	{
 		if(bits.equals("000000"))
@@ -50,6 +60,7 @@ public class Disassembler
 			return 2; //i-format
 	}
 	
+	//decodes the register bits
 	static int decodeReg(String bits)
 	{
 		int reg=0;
@@ -66,6 +77,7 @@ public class Disassembler
 		return reg;
 	}
 	
+	//decodes shamt
 	static int decodeShamt(String bits)
 	{
 		int offset = 0;
@@ -82,8 +94,8 @@ public class Disassembler
 		return offset;
 	}
 	
-	//I&J-format instructions will pass their opcode to this function
-	static String decodeFunc(String bits)
+	//decodes the function name for r-type instruction and syscall
+	static String decodeRFunc(String bits)
 	{
 		String funcName = new String();
 		int func = 0;
@@ -102,7 +114,7 @@ public class Disassembler
 		
 		//starts to decode the function bits and returns
 			//the name of the instruction
-		if(func == 0x20)//r-format instruction names
+		if(func == 0x20)
 			funcName = "Add";
 		else if(func == 0x21)
 			funcName = "addu";
@@ -126,8 +138,34 @@ public class Disassembler
 			funcName = "sub";
 		else if(func == 0x23)
 			funcName = "subu";
-		else if(func == 0x8)
-			funcName = "addi";
+		else if(func == 0xc)
+			funcName = "syscall";
+		
+		
+		return funcName;
+	}
+	
+	//decodes the function name for I and J types
+		//conflict in the opcode/function code with addi and syscall
+	static String decodeIJFunc(String bits)
+	{
+		String funcName = new String();
+		int func = 0;
+		if(bits.charAt(5) == '1')
+			func += 1;
+		if(bits.charAt(4) == '1')
+			func += 2;
+		if(bits.charAt(3) == '1')
+			func += 4;
+		if(bits.charAt(2) == '1')
+			func += 8;
+		if(bits.charAt(1) == '1')
+			func += 16;
+		if(bits.charAt(0) == '1')
+			func += 32;
+		
+		if(func == 0x8)
+			funcName = "addi";//i-format
 		else if(func == 0x9)
 			funcName = "addiu";
 		else if(func == 0xc)
@@ -160,7 +198,7 @@ public class Disassembler
 			funcName = "sh";
 		else if(func == 0x2b)
 			funcName = "sw";
-		else if(func == 0x2)
+		else if(func == 0x2)//j-types
 			funcName = "j";
 		else if(func == 0x3)
 			funcName = "jal";
