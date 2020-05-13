@@ -72,7 +72,7 @@ public class Disassembler
 	}
 	
 	//decodes the register bits
-	static int decodeReg(String bits)
+	private int decodeReg(String bits)
 	{
 		//starts at the fifth bit and works towards to first adding the appropriate power of 2
 		int reg=0;
@@ -90,7 +90,7 @@ public class Disassembler
 	}
 	
 	//decodes shamt
-	static int decodeShamt(String bits)
+	private int decodeShamt(String bits)
 	{
 		//starts at the 5th bit and goes to the first while adding the correct power of 2
 		int offset = 0;
@@ -108,7 +108,7 @@ public class Disassembler
 	}
 	
 	//decodes the function name for r-type instruction and syscall
-	static String decodeRFunc(String bits)
+	private String decodeRFunc(String bits)
 	{
 		//finds the value of the bits
 		String funcName = new String();
@@ -161,7 +161,7 @@ public class Disassembler
 	
 	//decodes the function name for I and J types
 		//conflict in the opcode/function code with addi and syscall
-	static String decodeIJFunc(String bits)
+	private String decodeIJFunc(String bits)
 	{
 		//finds the value of the bits passed to it
 		String funcName = new String();
@@ -224,7 +224,7 @@ public class Disassembler
 	}
 	
 	//decodes the 26 bit address for J type instructions
-	static String decodeJAddress(String bits)
+	private String decodeJAddress(String bits)
 	{
 		String address = new String();
 		String hexAddress = new String();
@@ -265,7 +265,7 @@ public class Disassembler
 		return hexAddress;
 	}
 	
-	static String decodeImmField(String bits)
+	private String decodeImmField(String bits)
 	{
 		
 		return "";
