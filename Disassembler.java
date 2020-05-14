@@ -10,7 +10,7 @@ public class Disassembler
 			"$fp","$ra"};
 	String bitString;
 	int fType;
-	int rs,rt,rd,shamt;
+	int rs,rt,rd,shamt,immediate;
 	String funct;
 	String jAddress;
 	
@@ -49,8 +49,9 @@ public class Disassembler
 		funct = decodeIJFunc(bitString.substring(0,6));
 		rs = decodeReg(bitString.substring(6,11));
 		rt = decodeReg(bitString.substring(11,16));
+		immediate = decodeImmField(bitString.substring(16));
 		
-		output.setmipsCodeI(funct, registers[rs], registers[rt], "TEMP");
+		output.setmipsCodeI(funct, registers[rs], registers[rt], immediate);
 	}
 	
 	private void decodeJInstruction() {
@@ -262,12 +263,16 @@ public class Disassembler
 				hexAddress += 'F';
 		}
 			
+		hexAddress = "0x" + hexAddress;
 		return hexAddress;
 	}
 	
-	private String decodeImmField(String bits)
+	private int decodeImmField(String bits)
 	{
-		
-		return "";
+		int value = 0;
+		for(int i = 0;i<16;i++)
+			if(bits.charAt(i) == '1')
+				value += 2^i;
+		return value;
 	}
 }
